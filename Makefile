@@ -29,6 +29,10 @@ install-rust:
 		command -v zig >/dev/null 2>&1 || brew install zig; \
 	fi
 
+# Train model
+train:
+	python model_pipeline/train.py
+
 # Verify versions
 check:
 	@echo "--- Tool Versions ---"
