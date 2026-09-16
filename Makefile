@@ -19,6 +19,7 @@ install-python:
 	python3 -m venv .venv
 	.venv/bin/pip install --upgrade pip
 	.venv/bin/pip install -r model_pipeline/requirements.txt
+	pip freeze > requirements.txt
 
 # Rust setup target
 install-rust:
