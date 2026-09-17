@@ -18,7 +18,7 @@ install-python:
 	@echo "Setting up Python virtual environment..."
 	python3 -m venv .venv
 	.venv/bin/pip install --upgrade pip
-	.venv/bin/pip install -r model_pipeline/requirements.txt
+	.venv/bin/pip install -r requirements.txt
 	pip freeze > requirements.txt
 
 # Rust setup target
