@@ -35,7 +35,10 @@ jobs:
       - name: Install Zig
         run: |
           python3 -m pip install --user ziglang==0.13.0
-          ZIG_BIN="$(python3 -m site --user-base)/bin"
+          ZIG_BIN="$RUNNER_TEMP/zig/bin"
+          mkdir -p "$ZIG_BIN"
+          printf '%s\n' '#!/usr/bin/env bash' 'exec python3 -m ziglang "$@"' > "$ZIG_BIN/zig"
+          chmod +x "$ZIG_BIN/zig"
           echo "$ZIG_BIN" >> "$GITHUB_PATH"
           "$ZIG_BIN/zig" version
 
