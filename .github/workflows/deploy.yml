@@ -34,8 +34,10 @@ jobs:
 
       - name: Install Zig
         run: |
-          pip3 install ziglang==0.13.0
-          zig version
+          python3 -m pip install --user ziglang==0.13.0
+          ZIG_BIN="$(python3 -m site --user-base)/bin"
+          echo "$ZIG_BIN" >> "$GITHUB_PATH"
+          "$ZIG_BIN/zig" version
 
       - name: Run tests
         run: cargo test --locked
