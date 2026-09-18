@@ -59,3 +59,41 @@ Client ── POST Function URL ──► lambda_http::run(...) │
 `src/main.rs` initializes the Lambda runtime and loads the ONNX model once per
 warm Lambda environment. `src/lib.rs` validates each HTTP request and returns
 the JSON response. `src/inference.rs` runs model inference.
+
+## Performance measurements
+
+Measurements captured on 2026-09-18 from the `rust-ml-inference` Lambda in
+`us-east-1`. Lambda execution time and cold-start initialization are read from
+CloudWatch `REPORT` log entries; end-to-end timings include the public network
+round trip from the benchmark client.
+
+| Metric | Result | Target | Source |
+| --- | ---: | ---: | --- |
+| Lambda execution duration | 1.29–1.42 ms | <20 ms | CloudWatch `REPORT` logs |
+| Cold-start initialization | 87.88–122.64 ms | <150 ms | CloudWatch `Init Duration` |
+| HTTP median latency (p50) | 106.1 ms | — | `hey` load benchmark |
+| HTTP p95 latency | 187.5 ms | — | `hey` load benchmark |
+| Throughput | 80.62 requests/s | — | `hey` load benchmark |
+
+The 1,000-request benchmark used concurrency 10. It completed with 999 HTTP
+200 responses and one HTTP 429 response; the latter is counted separately from
+successful inference responses.
+
+```bash
+hey -n 1000 -c 10 \
+  -m POST \
+  -H 'Content-Type: application/json' \
+  -d '{"features":[5.1,3.5,1.4,0.2]}' \
+  'https://amyqfw3bcu2wohjbm4c7ge6ywu0gcayt.lambda-url.us-east-1.on.aws/'
+```
+
+The handler logs `request_execution_ms` for every request. After deploying the
+current code, query that field in the `/aws/lambda/rust-ml-inference`
+CloudWatch log group to track request-level execution time.
+
+```bash
+aws logs filter-log-events \
+  --region us-east-1 \
+  --log-group-name /aws/lambda/rust-ml-inference \
+  --filter-pattern '"request_execution_ms"'
+```
