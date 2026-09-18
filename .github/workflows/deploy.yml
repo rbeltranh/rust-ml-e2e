@@ -32,6 +32,11 @@ jobs:
       - name: Install cargo-lambda
         run: cargo install cargo-lambda --locked
 
+      - name: Install Zig
+        run: |
+          pip3 install ziglang==0.13.0
+          zig version
+
       - name: Run tests
         run: cargo test --locked
 
