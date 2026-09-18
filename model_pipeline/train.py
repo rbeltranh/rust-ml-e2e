@@ -46,9 +46,10 @@ def main():
     
     # Convert scikit-learn model to ONNX
     onnx_model = convert_sklearn(
-        model, 
+        model,
         initial_types=initial_type,
-        target_opset=15
+        target_opset=15,
+        options={id(model): {"zipmap": False}},
     )
 
     # Save artifact
